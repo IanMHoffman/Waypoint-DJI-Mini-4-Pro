@@ -6,12 +6,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <style>
         #map { height: 600px; }
+        #controls { margin-top: 20px; }
     </style>
 </head>
 <body>
     <h1>Drone Waypoint Generator</h1>
     <div id="map"></div>
-    <button id="generate">Generate Waypoints</button>
+    <div id="controls">
+        <label for="altitude">Altitude (m):</label>
+        <input type="number" id="altitude" value="50">
+        <label for="speed">Speed (m/s):</label>
+        <input type="number" id="speed" value="5">
+        <label for="cameraAction">Camera Action:</label>
+        <select id="cameraAction">
+            <option value="none">None</option>
+            <option value="takePhoto">Take Photo</option>
+            <option value="startVideo">Start Video</option>
+        </select>
+        <button id="generate">Generate Waypoints</button>
+    </div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

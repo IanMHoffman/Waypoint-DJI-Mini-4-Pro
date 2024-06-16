@@ -6,7 +6,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-def generate_rectilinear_path(polygon, spacing=10):
+def generate_rectilinear_path(polygon, spacing=10, altitude=50, speed=5, camera_action='none'):
     minx, miny, maxx, maxy = polygon.bounds
     x_coords = np.arange(minx, maxx, spacing)
     y_coords = np.arange(miny, maxy, spacing)
@@ -16,7 +16,7 @@ def generate_rectilinear_path(polygon, spacing=10):
         line = [Point(x, y) for x in x_coords]
         for point in line:
             if polygon.contains(point):
-                waypoints.append((point.x, point.y, 50))  # Assuming 50m altitude
+                waypoints.append((point.x, point.y, altitude, speed, camera_action))
 
     return waypoints
 
@@ -57,7 +57,8 @@ def generate_kml(waypoints):
           </Point>
           <wpml:index>{i}</wpml:index>
           <wpml:executeHeight>{waypoint[2]}</wpml:executeHeight>
-          <wpml:waypointSpeed>2.5</wpml:waypointSpeed>
+          <wpml:waypointSpeed>{waypoint[3]}</wpml:waypointSpeed>
+          <wpml:cameraAction>{waypoint[4]}</wpml:cameraAction>
         </Placemark>
         """
     return kml_template.format(placemarks)
@@ -69,9 +70,14 @@ def index():
 @app.route('/generate', methods=['POST'])
 def generate():
     data = request.get_json()
-    gdf = gpd.GeoDataFrame.from_features(data['features'])
+    geojson = data['geojson']
+    altitude = data['altitude']
+    speed = data['speed']
+    camera_action = data['cameraAction']
+    
+    gdf = gpd.GeoDataFrame.from_features(geojson['features'])
     polygon = gdf.iloc[0].geometry
-    waypoints = generate_rectilinear_path(polygon, spacing=0.0001)  # Adjust spacing as needed
+    waypoints = generate_rectilinear_path(polygon, spacing=0.0001, altitude=altitude, speed=speed, camera_action=camera_action)  # Adjust spacing as needed
     kml_content = generate_kml(waypoints)
     return jsonify({'kml': kml_content})
 

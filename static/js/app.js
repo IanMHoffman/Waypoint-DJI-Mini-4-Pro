@@ -29,12 +29,21 @@ map.on(L.Draw.Event.CREATED, function (event) {
 
 document.getElementById('generate').onclick = function() {
     var data = drawnItems.toGeoJSON();
+    var altitude = document.getElementById('altitude').value;
+    var speed = document.getElementById('speed').value;
+    var cameraAction = document.getElementById('cameraAction').value;
+
     fetch('/generate', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+            geojson: data,
+            altitude: altitude,
+            speed: speed,
+            cameraAction: cameraAction
+        })
     })
     .then(response => response.json())
     .then(data => {
